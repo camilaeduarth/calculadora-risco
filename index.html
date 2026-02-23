@@ -751,24 +751,23 @@
         <div class="footer">
             <p>Instituto Nacional de Câncer (INCA)</p>
             <p>Trabalho de Conclusão de Residência - Camila Souza dos Santos</p>
-            <p>Dosimetria Clínica para Radioterapia </p>
-
+            <p>Dosimetria Clínica para Radioterapia</p>
         </div>
     </div>
 
     <script>
         // Modelo de Machine Learning - Random Forest
         const MODEL = {
-            baseline_risk: 0.528,
+            baseline_logit: -0.112, // log(0.528 / (1 - 0.528))
             coefficients: {
-                location_jeg: Math.log(2.52),
-                v5_v20_ratio: Math.log(1.08) / 10,
-                age: Math.log(1.06),
-                fev1: Math.log(0.85) / 10,
-                v20: Math.log(0.95) / 10,
-                v30: Math.log(0.94) / 10,
+                location_jeg: 0.924,      // log(2.52)
+                v5_v20_ratio: 0.0077,     // log(1.08) / 10
+                age: 0.0583,              // log(1.06)
+                fev1: -0.0163,            // log(0.85) / 10
+                v20: -0.0051,             // log(0.95) / 10
+                v30: -0.0062,             // log(0.94) / 10
                 smoking: 0.3,
-                imc: Math.log(1.02) / 10
+                imc: 0.00198              // log(1.02) / 10
             }
         };
 
@@ -807,16 +806,16 @@
         function calculateLogOdds(data) {
             const v5_v20_ratio = data.v20 > 0 ? data.v5 / data.v20 : 0;
             
-            let logOdds = Math.log(MODEL.baseline_risk / (1 - MODEL.baseline_risk));
+            let logOdds = MODEL.baseline_logit;
             
             logOdds += data.location * MODEL.coefficients.location_jeg;
             logOdds += v5_v20_ratio * MODEL.coefficients.v5_v20_ratio;
-            logOdds += data.age * MODEL.coefficients.age;
-            logOdds += (data.fev1 / 10) * MODEL.coefficients.fev1;
-            logOdds += (data.v20 / 10) * MODEL.coefficients.v20;
-            logOdds += (data.v30 / 10) * MODEL.coefficients.v30;
+            logOdds += (data.age / 100) * MODEL.coefficients.age;  // Normalizar idade
+            logOdds += (data.fev1 / 100) * MODEL.coefficients.fev1;  // Normalizar FEV1
+            logOdds += (data.v20 / 100) * MODEL.coefficients.v20;  // Normalizar V20
+            logOdds += (data.v30 / 100) * MODEL.coefficients.v30;  // Normalizar V30
             logOdds += data.smoking * MODEL.coefficients.smoking;
-            logOdds += (data.imc / 10) * MODEL.coefficients.imc;
+            logOdds += (data.imc / 100) * MODEL.coefficients.imc;  // Normalizar IMC
             
             return logOdds;
         }

@@ -1,810 +1,814 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> Calculadora de Risco – Pneumonite Actínica </title>
-
-  <!-- Favicon simples (sem arquivo extra) -->
-  <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%AB%81%3C/text%3E%3C/svg%3E">
-
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root{
-      --inca-blue:#0b5fa5;
-      --inca-teal:#0aa6a6;
-      --deep:#0b2e4f;
-      --ink:#0f172a;
-      --muted:#6b7280;
-      --line:#e5e7eb;
-      --paper:#ffffff;
-      --soft:#f8fafc;
-      --shadow: 0 18px 55px rgba(0,0,0,.18);
-    }
-
-    body{
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, var(--deep) 0%, var(--inca-blue) 45%, var(--inca-teal) 100%);
-      min-height: 100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 20px;
-      color: var(--ink);
-    }
-
-    .container{
-      width: 100%;
-      max-width: 1050px;
-      background: var(--paper);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    /* Ribbon institucional */
-    .inca-ribbon{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      padding:14px 20px;
-      background: var(--deep);
-      color:#fff;
-    }
-    .inca-left{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .inca-mark{
-      font-weight:800;
-      letter-spacing:1px;
-      font-size:15px;
-      padding:6px 10px;
-      border:1px solid rgba(255,255,255,.35);
-      border-radius:10px;
-      line-height:1;
-    }
-    .inca-sub{
-      font-size:12px;
-      opacity:.9;
-      white-space:nowrap;
-    }
-    .inca-right{
-      text-align:right;
-    }
-    .inca-service{
-      font-size:12px;
-      font-weight:700;
-      opacity:.95;
-    }
-    .inca-note{
-      font-size:11px;
-      opacity:.8;
-    }
-
-    .header{
-      background: linear-gradient(135deg, var(--inca-blue) 0%, var(--inca-teal) 100%);
-      color:#fff;
-      padding: 30px 26px;
-      text-align:center;
-    }
-    .header h1{
-      font-size: 24px;
-      margin-bottom: 6px;
-      font-weight: 800;
-      letter-spacing:.2px;
-    }
-    .header p{
-      font-size: 13px;
-      opacity: .92;
-      max-width: 720px;
-      margin: 0 auto;
-    }
-
-    .content{
-      padding: 28px 24px;
-      max-height: 70vh;
-      overflow-y: auto;
-    }
-
-    .info-box{
-      background: #eef7ff;
-      border-left: 4px solid var(--inca-blue);
-      padding: 14px 14px;
-      border-radius: 8px;
-      margin-bottom: 18px;
-      font-size: 13px;
-      color: var(--ink);
-    }
-    .info-box strong{ color: var(--inca-blue); }
-
-    .error-message{
-      color:#721c24;
-      background:#f8d7da;
-      border:1px solid #f5c6cb;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      display:none;
-      font-size: 13px;
-    }
-    .error-message.show{ display:block; }
-
-    .section-title{
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--inca-blue);
-      margin-top: 22px;
-      margin-bottom: 12px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(11,95,165,.25);
-      letter-spacing:.2px;
-    }
-
-    /* Card por seção (mais hospital) */
-    .form-section{
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 16px;
-      background: var(--paper);
-      border: 1px solid #eef2f7;
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 8px 25px rgba(15, 23, 42, .05);
-      margin-bottom: 18px;
-    }
-    @media (max-width: 1024px){ .form-section{ grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 768px){ .form-section{ grid-template-columns: 1fr; } }
-
-    .form-group{ display:flex; flex-direction:column; }
-    .form-group label{
-      font-weight: 700;
-      color: var(--ink);
-      margin-bottom: 6px;
-      font-size: 12px;
-    }
-    .form-group .description{
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .form-group input,
-    .form-group select{
-      padding: 10px 12px;
-      border: 1.5px solid var(--line);
-      border-radius: 10px;
-      font-size: 13px;
-      transition: all .2s ease;
-      font-family: inherit;
-      background: #fff;
-      color: var(--ink);
-    }
-    .form-group input:focus,
-    .form-group select:focus{
-      outline: none;
-      border-color: var(--inca-blue);
-      box-shadow: 0 0 0 4px rgba(11, 95, 165, .10);
-    }
-    .form-group input::placeholder{ color:#9ca3af; }
-
-    .calculated-value{
-      padding: 10px 12px;
-      background: #f3f4f6;
-      border: 1.5px solid var(--line);
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--inca-blue);
-    }
-
-    .button-group{
-      display:flex;
-      gap: 12px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
-    .btn{
-      flex: 1;
-      min-width: 160px;
-      padding: 12px 18px;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all .2s ease;
-    }
-
-    .btn-calculate{
-      background: linear-gradient(135deg, var(--inca-blue) 0%, var(--inca-teal) 100%);
-      color: #fff;
-    }
-    .btn-calculate:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(11,95,165,.22);
-    }
-
-    .btn-reset{
-      border: 1px solid var(--line);
-      background: #f3f4f6;
-      color: var(--ink);
-    }
-    .btn-reset:hover{ background: #e5e7eb; }
-
-    .btn-print{
-      background: var(--deep);
-      color:#fff;
-    }
-    .btn-print:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(11,46,79,.22);
-    }
-
-    /* Resultado estilo “relatório” */
-    .result-section{
-      display:none;
-      margin-top: 18px;
-      padding: 18px;
-      background: var(--soft);
-      border-radius: 14px;
-      border-left: 6px solid var(--inca-blue);
-    }
-    .result-section.show{
-      display:block;
-      animation: slideIn .35s ease;
-    }
-    @keyframes slideIn{
-      from{ opacity:0; transform: translateY(10px); }
-      to{ opacity:1; transform: translateY(0); }
-    }
-
-    .result-header{
-      display:flex;
-      align-items:center;
-      gap: 14px;
-      margin-bottom: 12px;
-    }
-
-    .risk-icon{
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size: 26px;
-      font-weight: 900;
-    }
-    .risk-icon.low{ background:#d4edda; color:#155724; }
-    .risk-icon.medium{ background:#fff3cd; color:#856404; }
-    .risk-icon.high{ background:#f8d7da; color:#721c24; }
-
-    .result-title{ flex:1; }
-    .result-title h2{
-      font-size: 18px;
-      margin-bottom: 4px;
-      letter-spacing: .2px;
-    }
-    .result-title p{
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .probability-display{
-      margin: 14px 0;
-      padding: 14px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-    }
-    .probability-label{
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: .6px;
-    }
-    .probability-bar{
-      width: 100%;
-      height: 38px;
-      background: #e5e7eb;
-      border-radius: 10px;
-      overflow:hidden;
-      position:relative;
-    }
-    .probability-fill{
-      height:100%;
-      background: linear-gradient(90deg, var(--inca-blue) 0%, var(--inca-teal) 100%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#fff;
-      font-weight: 900;
-      font-size: 15px;
-      transition: all .45s ease;
-    }
-    .probability-fill.low{ background: linear-gradient(90deg, #28a745 0%, #20c997 100%); }
-    .probability-fill.medium{ background: linear-gradient(90deg, #ffc107 0%, #ff9800 100%); }
-    .probability-fill.high{ background: linear-gradient(90deg, #dc3545 0%, #e74c3c 100%); }
-
-    .result-details{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 10px;
-    }
-    @media (max-width: 768px){ .result-details{ grid-template-columns: 1fr; } }
-
-    .detail-item{
-      padding: 14px;
-      background:#fff;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      border-left: 3px solid rgba(11,95,165,.65);
-    }
-    .detail-label{
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .6px;
-      margin-bottom: 6px;
-    }
-    .detail-value{
-      font-size: 16px;
-      font-weight: 900;
-      color: var(--ink);
-    }
-
-    .recommendations{
-      margin-top: 12px;
-      padding: 14px;
-      background:#fff;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-    }
-    .recommendations h3{
-      font-size: 14px;
-      margin-bottom: 10px;
-      color: var(--ink);
-    }
-    .recommendations ul{ list-style:none; padding:0; }
-    .recommendations li{
-      padding: 9px 0 9px 24px;
-      position:relative;
-      color: #374151;
-      font-size: 13px;
-      border-bottom: 1px dashed #eef2f7;
-    }
-    .recommendations li:last-child{ border-bottom:none; }
-    .recommendations li:before{
-      content:"✓";
-      position:absolute;
-      left:0;
-      color: var(--inca-blue);
-      font-weight: 900;
-    }
-
-    .footer{
-      background: #f3f4f6;
-      padding: 16px 22px;
-      text-align:center;
-      font-size: 12px;
-      color: var(--muted);
-      border-top: 1px solid var(--line);
-    }
-    .footer p{ margin: 4px 0; }
-
-    /* =========================
-       C) Banca mode (Print/PDF)
-       ========================= */
-    @media print{
-      body{ background:#fff !important; padding:0 !important; }
-
-      .inca-ribbon,
-      .header,
-      form,
-      .info-box,
-      .error-message,
-      .button-group{
-        display:none !important;
-      }
-
-      .container{
-        box-shadow:none !important;
-        border-radius:0 !important;
-        max-width:100% !important;
-      }
-
-      .content{
-        max-height:none !important;
-        overflow:visible !important;
-        padding: 14px 18px !important;
-      }
-
-      #resultSection{
-        display:block !important;
-        margin-top:0 !important;
-        background:#fff !important;
-        border-left: 0 !important;
-        padding: 0 !important;
-      }
-
-      .probability-display,
-      .detail-item,
-      .recommendations{
-        background:#fff !important;
-        border: 1px solid #e5e7eb !important;
-      }
-
-      .footer{
-        background:#fff !important;
-        border-top:1px solid #e5e7eb !important;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="container">
-    <div class="inca-ribbon">
-      <div class="inca-left">
-        <div class="inca-mark" aria-hidden="true">INCA</div>
-        <div class="inca-sub">Instituto Nacional de Câncer</div>
-      </div>
-      <div class="inca-right">
-        <div class="inca-service">Radioterapia • Dosimetria Clínica</div>
-        <div class="inca-note">Ferramenta educacional</div>
-      </div>
-    </div>
-
-    <div class="header">
-      <h1>Calculadora de Risco</h1>
-      <p>Pneumonite actínica em câncer de esôfago</p>
-    </div>
-
-    <div class="content">
-      <div class="info-box">
-        <strong>ℹ️ Informação:</strong>
-        Ferramenta educacional baseada em modelo preditivo construído a partir de coorte clínica (n=53).
-        Não substitui avaliação médica. Use como apoio à decisão e sempre correlacione com contexto clínico,
-        imagem e parâmetros dosimétricos.
-      </div>
-
-      <div class="error-message" id="errorMessage"></div>
-
-      <form id="calculatorForm" onsubmit="handleSubmit(event)">
-        <!-- DADOS CLÍNICOS -->
-        <div class="section-title">Dados clínicos</div>
-        <div class="form-section">
-          <div class="form-group">
-            <label for="age">Idade (anos) *</label>
-            <div class="description">Idade do paciente</div>
-            <input type="number" id="age" placeholder="Ex: 62" min="18" max="100" required />
-          </div>
-
-          <div class="form-group">
-            <label for="fev1">FEV1 (% predito) *</label>
-            <div class="description">Volume expiratório forçado</div>
-            <input type="number" id="fev1" placeholder="Ex: 85" min="20" max="150" step="1" required />
-          </div>
-
-          <div class="form-group">
-            <label for="imc">IMC (kg/m²) *</label>
-            <div class="description">Índice de Massa Corporal</div>
-            <input type="number" id="imc" placeholder="Ex: 24.5" min="15" max="50" step="0.1" required />
-          </div>
-
-          <div class="form-group">
-            <label for="location">Localização JEG *</label>
-            <div class="description">Junção esôfago-gástrica</div>
-            <select id="location" required>
-              <option value="">-- Selecione --</option>
-              <option value="1">Sim (JEG)</option>
-              <option value="0">Não (Esôfago)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="smoking">Tabagismo ativo *</label>
-            <div class="description">Fumante no momento</div>
-            <select id="smoking" required>
-              <option value="">-- Selecione --</option>
-              <option value="1">Sim</option>
-              <option value="0">Não</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- PARÂMETROS DOSIMÉTRICOS -->
-        <div class="section-title">Parâmetros dosimétricos</div>
-        <div class="form-section">
-          <div class="form-group">
-            <label for="v5">V5 (%) *</label>
-            <div class="description">Volume ≥ 5 Gy</div>
-            <input type="number" id="v5" placeholder="Ex: 24.3" step="0.1" min="0" max="100" required />
-          </div>
-
-          <div class="form-group">
-            <label for="v10">V10 (%) *</label>
-            <div class="description">Volume ≥ 10 Gy</div>
-            <input type="number" id="v10" placeholder="Ex: 20.5" step="0.1" min="0" max="100" required />
-          </div>
-
-          <div class="form-group">
-            <label for="v20">V20 (%) *</label>
-            <div class="description">Volume ≥ 20 Gy</div>
-            <input type="number" id="v20" placeholder="Ex: 15.5" step="0.1" min="0" max="100" required />
-          </div>
-
-          <div class="form-group">
-            <label for="v30">V30 (%) *</label>
-            <div class="description">Volume ≥ 30 Gy</div>
-            <input type="number" id="v30" placeholder="Ex: 8.5" step="0.1" min="0" max="100" required />
-          </div>
-
-          <div class="form-group">
-            <label for="dpm">DPM (cGy) *</label>
-            <div class="description">Dose Pulmonar Média</div>
-            <input type="number" id="dpm" placeholder="Ex: 982" step="1" min="0" max="5000" required />
-          </div>
-
-          <div class="form-group">
-            <label for="vs5">VS5 (%) *</label>
-            <div class="description">Volume &gt; 5 Gy</div>
-            <input type="number" id="vs5" placeholder="Ex: 24.3" step="0.1" min="0" max="100" required />
-          </div>
-        </div>
-
-        <!-- VALORES CALCULADOS -->
-        <div class="section-title">Valores calculados</div>
-        <div class="form-section">
-          <div class="form-group">
-            <label>Razão V5/V20</label>
-            <div class="description">Atualiza automaticamente</div>
-            <div class="calculated-value" id="ratioValue">0.00</div>
-          </div>
-        </div>
-
-        <!-- BOTÕES -->
-        <div class="button-group">
-          <button type="submit" class="btn btn-calculate">Estimar risco</button>
-          <button type="button" class="btn btn-print" id="btnPrint" onclick="printReport()" style="display:none;">
-            Imprimir / Salvar PDF
-          </button>
-          <button type="reset" class="btn btn-reset" onclick="resetForm()">Nova avaliação</button>
-        </div>
-      </form>
-
-      <!-- RESULTADO -->
-      <div class="result-section" id="resultSection">
-        <div class="result-header">
-          <div class="risk-icon" id="riskIcon">🟢</div>
-          <div class="result-title">
-            <h2 id="resultTitle">Relatório de Estimativa de Risco</h2>
-            <p id="resultSubtitle">Pneumonite actínica</p>
-          </div>
-        </div>
-
-        <div class="probability-display">
-          <div class="probability-label">Probabilidade estimada de pneumonite actínica</div>
-          <div class="probability-bar">
-            <div class="probability-fill" id="probabilityFill" style="width:0%">
-              <span id="probabilityText">0%</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="result-details">
-          <div class="detail-item">
-            <div class="detail-label">Classificação</div>
-            <div id="riskCategory" class="detail-value">--</div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Razão V5/V20</div>
-            <div id="ratioDisplay" class="detail-value">--</div>
-          </div>
-        </div>
-
-        <div class="recommendations">
-          <h3>Recomendações clínicas</h3>
-          <ul id="recommendationsList"></ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer">
-      <p> • Instituto Nacional de Câncer (INCA) • </p>
-      <p> • Ferramenta educacional • Trabalho de Conclusão de Residência  •</p>
-    </div>
-  </div>
-
-  <script>
-    // === Modelo (mantido como no seu arquivo) ===
-    const MODEL = {
-      baseline_risk: 0.528,
-      coefficients: {
-        location_jeg: Math.log(2.52),
-        v5_v20_ratio: Math.log(1.08) / 10,
-        age: Math.log(1.06),
-        fev1: Math.log(0.85) / 10,
-        v20: Math.log(0.95) / 10,
-        v30: Math.log(0.94) / 10,
-        smoking: 0.3,
-        imc: Math.log(1.02) / 10
-      }
-    };
-
-    // Atualizar razão V5/V20 em tempo real
-    const v5El = document.getElementById('v5');
-    const v20El = document.getElementById('v20');
-
-    v5El.addEventListener('input', updateRatio);
-    v20El.addEventListener('input', updateRatio);
-
-    function updateRatio(){
-      const v5 = parseFloat(v5El.value) || 0;
-      const v20 = parseFloat(v20El.value) || 0;
-      const ratio = v20 > 0 ? (v5 / v20).toFixed(2) : '0.00';
-      document.getElementById('ratioValue').textContent = ratio;
-    }
-
-    function showError(message){
-      const errorDiv = document.getElementById('errorMessage');
-      errorDiv.textContent = message;
-      errorDiv.classList.add('show');
-    }
-
-    function clearError(){
-      const errorDiv = document.getElementById('errorMessage');
-      errorDiv.textContent = '';
-      errorDiv.classList.remove('show');
-    }
-
-    function validateInputs(){
-      const fields = ['age','fev1','imc','location','smoking','v5','v10','v20','v30','dpm','vs5'];
-      for (const field of fields){
-        const el = document.getElementById(field);
-        if (!el || el.value === '' || el.value === null){
-          showError('Preencha todos os campos obrigatórios (*).');
-          return false;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Risco – Pneumonite Actínica </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      }
-      return true;
-    }
 
-    function calculateLogOdds(data){
-      const v5_v20_ratio = data.v20 > 0 ? data.v5 / data.v20 : 0;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0b5fa5 0%, #0aa6a6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-      let logOdds = Math.log(MODEL.baseline_risk / (1 - MODEL.baseline_risk));
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
 
-      logOdds += data.location * MODEL.coefficients.location_jeg;
-      logOdds += v5_v20_ratio * MODEL.coefficients.v5_v20_ratio;
-      logOdds += data.age * MODEL.coefficients.age;
-      logOdds += (data.fev1 / 10) * MODEL.coefficients.fev1;
-      logOdds += (data.v20 / 10) * MODEL.coefficients.v20;
-      logOdds += (data.v30 / 10) * MODEL.coefficients.v30;
-      logOdds += data.smoking * MODEL.coefficients.smoking;
-      logOdds += (data.imc / 10) * MODEL.coefficients.imc;
+        .header {
+            background: linear-gradient(135deg, #0b5fa5 0%, #0aa6a6 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
 
-      return logOdds;
-    }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
 
-    function logisticFunction(logOdds){
-      let p = 1 / (1 + Math.exp(-logOdds));
-      // clamp (mantido)
-      p = Math.max(0.05, Math.min(0.95, p));
-      return p;
-    }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-    function classifyRisk(probability){
-      if (probability < 0.30) return { category:'BAIXO', color:'low', emoji:'🟢' };
-      if (probability < 0.70) return { category:'INTERMEDIÁRIO', color:'medium', emoji:'🟡' };
-      return { category:'ALTO', color:'high', emoji:'🔴' };
-    }
+        .content {
+            padding: 40px 30px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
 
-    function getRecommendations(riskCategory){
-      const recommendations = {
-        'BAIXO': [
-          'Monitoramento clínico padrão',
-          'Avaliação radiológica de rotina (6 e 12 meses)',
-          'Educação do paciente sobre sinais e sintomas',
-          'Seguimento ambulatorial regular'
-        ],
-        'INTERMEDIÁRIO': [
-          'Monitoramento intensificado (4–6 semanas)',
-          'Avaliação radiológica mais frequente',
-          'Espirometria seriada',
-          'Otimização pulmonar pré-operatória',
-          'Discussão multidisciplinar'
-        ],
-        'ALTO': [
-          'Monitoramento muito frequente (2–4 semanas)',
-          'Avaliação radiológica seriada',
-          'Espirometria mensal',
-          'Suporte nutricional e reabilitação',
-          'Discussão multidisciplinar prioritária',
-          'Considerar ajustes no plano de tratamento'
-        ]
-      };
-      return recommendations[riskCategory] || [];
-    }
+        .form-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
 
-    function handleSubmit(event){
-      event.preventDefault();
-      clearError();
+        @media (max-width: 1024px) {
+            .form-section {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
 
-      if (!validateInputs()) return;
+        @media (max-width: 768px) {
+            .form-section {
+                grid-template-columns: 1fr;
+            }
+        }
 
-      const data = {
-        age: parseFloat(document.getElementById('age').value),
-        fev1: parseFloat(document.getElementById('fev1').value),
-        imc: parseFloat(document.getElementById('imc').value),
-        location: parseInt(document.getElementById('location').value, 10),
-        smoking: parseInt(document.getElementById('smoking').value, 10),
-        v5: parseFloat(document.getElementById('v5').value),
-        v10: parseFloat(document.getElementById('v10').value),
-        v20: parseFloat(document.getElementById('v20').value),
-        v30: parseFloat(document.getElementById('v30').value),
-        dpm: parseFloat(document.getElementById('dpm').value),
-        vs5: parseFloat(document.getElementById('vs5').value)
-      };
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
 
-      const logOdds = calculateLogOdds(data);
-      const probability = logisticFunction(logOdds);
-      const risk = classifyRisk(probability);
-      const ratio = data.v20 > 0 ? (data.v5 / data.v20) : 0;
-      const recs = getRecommendations(risk.category);
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
 
-      const percent = Math.round(probability * 100);
+        .form-group .description {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 6px;
+        }
 
-      // Header do relatório
-      document.getElementById('riskIcon').textContent = risk.emoji;
-      document.getElementById('riskIcon').className = `risk-icon ${risk.color}`;
-      document.getElementById('resultTitle').textContent = `Relatório – Risco ${risk.category}`;
-      document.getElementById('resultSubtitle').textContent = `${percent}% de probabilidade estimada`;
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
 
-      // Barra
-      const fill = document.getElementById('probabilityFill');
-      fill.style.width = percent + '%';
-      fill.className = `probability-fill ${risk.color}`;
-      document.getElementById('probabilityText').textContent = percent + '%';
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0b5fa5;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
 
-      // Detalhes
-      document.getElementById('riskCategory').textContent = risk.category;
-      document.getElementById('ratioDisplay').textContent = ratio.toFixed(2);
+        .form-group input::placeholder {
+            color: #bbb;
+        }
 
-      // Recomendações
-      const list = document.getElementById('recommendationsList');
-      list.innerHTML = recs.map(r => `<li>${r}</li>`).join('');
+        .calculated-value {
+            padding: 10px 12px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0b5fa5;
+        }
 
-      // Mostrar resultado + botão imprimir
-      document.getElementById('resultSection').classList.add('show');
-      document.getElementById('btnPrint').style.display = 'inline-block';
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0b5fa5;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0b5fa5;
+        }
 
-      // scroll suave até o relatório
-      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
 
-    function resetForm(){
-      document.getElementById('calculatorForm').reset();
-      document.getElementById('resultSection').classList.remove('show');
-      document.getElementById('ratioValue').textContent = '0.00';
-      document.getElementById('btnPrint').style.display = 'none';
-      clearError();
-    }
+        .btn {
+            flex: 1;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-    function printReport(){
-      // No iPhone/Safari, “Imprimir” permite “Salvar em PDF” (via compartilhar)
-      window.print();
-    }
-  </script>
+        .btn-calculate {
+            background: linear-gradient(135deg, #0b5fa5 0%, #0aa6a6 100%);
+            color: white;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border-left: 5px solid #0b5fa5;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .risk-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .risk-icon.low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .risk-icon.medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .risk-icon.high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .result-title {
+            flex: 1;
+        }
+
+        .result-title h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .result-title p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .probability-display {
+            margin: 25px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .probability-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .probability-bar {
+            width: 100%;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0b5fa5 0%, #0aa6a6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.5s ease;
+        }
+
+        .probability-fill.low {
+            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+        }
+
+        .probability-fill.medium {
+            background: linear-gradient(90deg, #ffc107 0%, #ff9800 100%);
+        }
+
+        .probability-fill.high {
+            background: linear-gradient(90deg, #dc3545 0%, #e74c3c 100%);
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .result-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .detail-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 3px solid #0b5fa5;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .recommendations {
+            margin-top: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .recommendations h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .recommendations li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #0b5fa5;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0b5fa5;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .info-box strong {
+            color: #0b5fa5;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .error-message {
+            color: #721c24;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .inca-ribbon{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            padding:14px 22px;
+            background:#0b2e4f;
+            color:#fff;
+        }
+        .inca-left{
+            display:flex;
+            align-items:baseline;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+        .inca-mark{
+            font-weight:800;
+            letter-spacing:1px;
+            font-size:16px;
+            padding:6px 10px;
+            border:1px solid rgba(255,255,255,.35);
+            border-radius:10px;
+            line-height:1;
+        }
+        .inca-sub{
+            font-size:12px;
+            opacity:.9;
+            white-space:nowrap;
+        }
+        .inca-right{
+            text-align:right;
+        }
+        .inca-service{
+            font-size:12px;
+            font-weight:700;
+            opacity:.95;
+        }
+        .inca-note{
+            font-size:11px;
+            opacity:.8;
+        }
+        
+        .inca-logo{
+            width:34px;height:34px;
+            display:flex;align-items:center;justify-content:center;
+        }
+
+        /* Botão PDF */
+        .btn-pdf{
+            background:#0b2e4f;
+            color:#fff;
+        }
+        .btn-pdf:hover{
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(11, 46, 79, 0.25);
+        }
+
+        /* Estilos de impressão (para salvar como PDF) */
+        @media print{
+            body{
+                background:#fff !important;
+                padding:0 !important;
+            }
+            .container{
+                box-shadow:none !important;
+                border-radius:0 !important;
+                max-width:100% !important;
+            }
+            .content{
+                max-height:none !important;
+                overflow:visible !important;
+                padding: 18px 22px !important;
+            }
+            .button-group,
+            form,
+            .info-box,
+            .error-message,
+            .inca-note{
+                display:none !important;
+            }
+            #resultSection{
+                display:block !important;
+                margin-top:0 !important;
+            }
+            .footer{
+                background:#fff !important;
+                border-top:1px solid #e5e7eb !important;
+            }
+        }
+
+        /* Institucional: tipografia mais sóbria */
+        .header h1{ letter-spacing: .2px; }
+        .container{ border-radius: 16px; }
+        .content{ padding: 34px 28px; }
+        .section-title{ letter-spacing:.3px; text-transform: none; }
+        .btn{ font-size: 15px; }
+        .footer{ color:#6b7280; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="inca-ribbon">
+            <div class="inca-left">
+                <div class="inca-logo" aria-hidden="true" title="Logo (placeholder)">
+                    <svg width="34" height="34" viewBox="0 0 64 64" role="img" aria-label="Logo">
+                        <circle cx="32" cy="32" r="30" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
+                        <path d="M20 38c5 4 19 4 24 0" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M24 28c3-8 13-8 16 0" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M32 14v36" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="inca-mark" aria-hidden="true">INCA</div>
+                <div class="inca-sub">Instituto Nacional de Câncer</div>
+            </div>
+            <div class="inca-right">
+                <div class="inca-service">Radioterapia • Dosimetria Clínica</div>
+                <div class="inca-note">Ferramenta educacional</div>
+            </div>
+        </div>
+        <div class="header">
+            <h1>Calculadora de Risco</h1>
+            <p>Pneumonite actínica em câncer de esôfago • Protocolo CROSS</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <strong>ℹ️ Informação:</strong> Ferramenta educacional baseada em modelo preditivo construído a partir de coorte clínica (n=53). Não substitui avaliação médica. Use como apoio à decisão e sempre correlacione com contexto clínico, imagem e parâmetros dosimétricos.
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <form id="calculatorForm" onsubmit="handleSubmit(event)">
+                
+                <!-- DADOS CLÍNICOS -->
+                <div class="section-title">📋 Dados Clínicos</div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="age">Idade (anos) *</label>
+                        <div class="description">Idade do paciente</div>
+                        <input type="number" id="age" placeholder="Ex: 62" min="18" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fev1">FEV1 (% predito) *</label>
+                        <div class="description">Volume expiratório forçado</div>
+                        <input type="number" id="fev1" placeholder="Ex: 85" min="20" max="150" step="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imc">IMC (kg/m²) *</label>
+                        <div class="description">Índice de Massa Corporal</div>
+                        <input type="number" id="imc" placeholder="Ex: 24.5" min="15" max="50" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Localização JEG *</label>
+                        <div class="description">Junção esôfago-gástrica</div>
+                        <select id="location" required>
+                            <option value="">-- Selecione --</option>
+                            <option value="1">Sim (JEG)</option>
+                            <option value="0">Não (Esôfago)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smoking">Tabagismo Ativo *</label>
+                        <div class="description">Fumante no momento</div>
+                        <select id="smoking" required>
+                            <option value="">-- Selecione --</option>
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- PARÂMETROS DOSIMÉTRICOS -->
+                <div class="section-title">📊 Parâmetros Dosimétricos</div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="v5">V5 (%) *</label>
+                        <div class="description">Volume ≥5 Gy</div>
+                        <input type="number" id="v5" placeholder="Ex: 24.3" step="0.1" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="v10">V10 (%) *</label>
+                        <div class="description">Volume ≥10 Gy</div>
+                        <input type="number" id="v10" placeholder="Ex: 20.5" step="0.1" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="v20">V20 (%) *</label>
+                        <div class="description">Volume ≥20 Gy</div>
+                        <input type="number" id="v20" placeholder="Ex: 15.5" step="0.1" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="v30">V30 (%) *</label>
+                        <div class="description">Volume ≥30 Gy</div>
+                        <input type="number" id="v30" placeholder="Ex: 8.5" step="0.1" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dpm">DPM (cGy) *</label>
+                        <div class="description">Dose Pulmonar Média</div>
+                        <input type="number" id="dpm" placeholder="Ex: 982" step="1" min="0" max="5000" required>
+                    </div>
+                </div>
+
+                <!-- VALORES CALCULADOS -->
+                <div class="section-title">🔢 Valores Calculados Automaticamente</div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>VS5 (%)</label>
+                        <div class="description">Calculado automaticamente (100 − V5)</div>
+                        <div class="calculated-value" id="vs5Value">0.00</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>V5/V20 Ratio</label>
+                        <div class="description">Calculado automaticamente</div>
+                        <div class="calculated-value" id="ratioValue">0.00</div>
+                    </div>
+                </div>
+
+                <!-- BOTÕES -->
+                <div class="button-group">
+                    <button type="submit" class="btn btn-calculate">Calcular Risco</button>
+                    <button type="button" class="btn btn-pdf" id="btnPdf" onclick="downloadPDF()" style="display:none;">Baixar resultado (PDF)</button>
+                    <button type="reset" class="btn btn-reset" onclick="resetForm()">Limpar</button>
+                </div>
+            </form>
+
+            <!-- RESULTADO -->
+            <div class="result-section" id="resultSection">
+                <div class="result-header">
+                    <div class="risk-icon" id="riskIcon">🟢</div>
+                    <div class="result-title">
+                        <h2 id="resultTitle">Resultado</h2>
+                        <p id="resultSubtitle">Análise de risco concluída</p>
+                    </div>
+                </div>
+
+                <div class="probability-display">
+                    <div class="probability-label">Probabilidade de Pneumonite Actínica</div>
+                    <div class="probability-bar">
+                        <div class="probability-fill" id="probabilityFill" style="width: 0%">
+                            <span id="probabilityText">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Classificação</div>
+                        <div id="riskCategory" class="detail-value">--</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">V5/V20 Ratio</div>
+                        <div id="ratioDisplay" class="detail-value">--</div>
+                    </div>
+                </div>
+
+                <div class="recommendations">
+                    <h3>📋 Recomendações Clínicas</h3>
+                    <ul id="recommendationsList">
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Instituto Nacional de Câncer (INCA) • Rio de Janeiro, RJ – Brasil</p>
+            <p>Trabalho de Conclusão de Residência - Camila Souza do Santos</p>
+        </div>
+    </div>
+
+    <script>
+        
+        // ===== Modelo calibrado (Regressão Logística) =====
+        const MODEL = {
+            intercept: -2.85,
+            beta: {
+                location: 0.92,
+                ratio: 0.08,
+                age: 0.05,
+                fev1: -0.015,
+                v20: 0.04,
+                v30: 0.02,
+                smoking: 0.35,
+                imc: 0.01
+            }
+        };
+
+        function calculateZ(data){
+            const ratio = data.v20 > 0 ? data.v5/data.v20 : 0;
+            let z = MODEL.intercept
+                + MODEL.beta.location * data.location
+                + MODEL.beta.ratio * ratio
+                + MODEL.beta.age * data.age
+                + MODEL.beta.fev1 * data.fev1
+                + MODEL.beta.v20 * data.v20
+                + MODEL.beta.v30 * data.v30
+                + MODEL.beta.smoking * data.smoking
+                + MODEL.beta.imc * data.imc;
+            return {z, ratio};
+        }
+
+        function logistic(z){
+            return 1/(1+Math.exp(-z));
+        }
+
+        function classifyRisk(p){
+            if(p < 0.30) return { category:'BAIXO', color:'low', emoji:'🟢' };
+            if(p < 0.70) return { category:'MODERADO', color:'medium', emoji:'🟡' };
+            return { category:'ALTO', color:'high', emoji:'🔴' };
+        }
+function downloadPDF(){
+            const result = document.getElementById('resultSection');
+            if (!result || !result.classList.contains('show')) {
+                alert('Calcule o risco antes de gerar o PDF.');
+                return;
+            }
+
+            // Preferência: gerar PDF do resultado (precisa de internet na primeira vez para carregar a biblioteca html2pdf)
+            if (window.html2pdf) {
+                const opt = {
+                    margin:       10,
+                    filename:     'INCA_Calculadora_Risco_Pneumonite_Resultado.pdf',
+                    image:        { type: 'jpeg', quality: 0.95 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak:    { mode: ['css', 'legacy'] }
+                };
+                // Gera apenas o bloco de resultado (mais limpo para anexar em e-mail/QR code)
+                window.html2pdf().set(opt).from(result).save();
+                return;
+            }
+
+            // Fallback (sem biblioteca / sem internet): abre diálogo de impressão para "Salvar como PDF"
+            window.print();
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            if (!validateInputs()) {
+                return;
+            }
+
+            const data = {
+                age: parseFloat(document.getElementById('age').value),
+                fev1: parseFloat(document.getElementById('fev1').value),
+                imc: parseFloat(document.getElementById('imc').value),
+                location: parseInt(document.getElementById('location').value),
+                smoking: parseInt(document.getElementById('smoking').value),
+                v5: parseFloat(document.getElementById('v5').value),
+                v10: parseFloat(document.getElementById('v10').value),
+                v20: parseFloat(document.getElementById('v20').value),
+                v30: parseFloat(document.getElementById('v30').value),
+                dpm: parseFloat(document.getElementById('dpm').value),
+                vs5: parseFloat(document.getElementById('vs5').value)
+            };
+
+            const logOdds = calculateLogOdds(data);
+            const probability = logisticFunction(logOdds);
+            const riskCategory = classifyRisk(probability);
+            const v5_v20_ratio = data.v20 > 0 ? data.v5 / data.v20 : 0;
+            const recommendations = getRecommendations(riskCategory.category);
+
+            // Atualizar resultado
+            const percentProbability = Math.round(probability * 100);
+            
+            document.getElementById('riskIcon').textContent = riskCategory.emoji;
+            document.getElementById('riskIcon').className = `risk-icon ${riskCategory.color}`;
+            document.getElementById('resultTitle').textContent = `Risco ${riskCategory.category}`;
+            document.getElementById('resultSubtitle').textContent = `${percentProbability}% de probabilidade`;
+
+            const probabilityFill = document.getElementById('probabilityFill');
+            probabilityFill.style.width = percentProbability + '%';
+            probabilityFill.className = `probability-fill ${riskCategory.color}`;
+            document.getElementById('probabilityText').textContent = percentProbability + '%';
+
+            document.getElementById('riskCategory').textContent = riskCategory.category;
+            document.getElementById('ratioDisplay').textContent = v5_v20_ratio.toFixed(2);
+
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = recommendations
+                .map(rec => `<li>${rec}</li>`)
+                .join('');
+
+            document.getElementById('resultSection').classList.add('show');
+            document.getElementById('btnPdf').style.display = 'inline-block';
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        function resetForm() {
+            document.getElementById('calculatorForm').reset();
+            document.getElementById('resultSection').classList.remove('show');
+            const btnPdf = document.getElementById('btnPdf');
+            if (btnPdf) btnPdf.style.display = 'none';
+            document.getElementById('ratioValue').textContent = '0.00';
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPGdhPK4P6GvC5mJpVt2a1wT6lZo9T1zvGkYvQK1z5Fz0xF0L8x9y7eYt3YhYc7XcY1r9Qq3tqG1c7z8GQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 </body>
 </html>

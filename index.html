@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Risco – Pneumonite Actínica </title>
+    <title>INCA | Calculadora de Risco – Pneumonite Actínica (CROSS)</title>
     <style>
         * {
             margin: 0;
@@ -517,7 +517,7 @@
         </div>
         <div class="header">
             <h1>Calculadora de Risco</h1>
-            <p>Pneumonite actínica em câncer de esôfago </p>
+            <p>Pneumonite actínica em câncer de esôfago • Protocolo CROSS</p>
         </div>
 
         <div class="content">
@@ -532,7 +532,91 @@
                 <!-- DADOS CLÍNICOS -->
                 <div class="section-title">📋 Dados Clínicos</div>
                 <div class="form-section">
-</div>
+                    <div class="form-group">
+                        <label for="patientName">Nome do paciente</label>
+                        <div class="description">Opcional (incluído no PDF)</div>
+                        <input type="text" id="patientName" placeholder="Ex: Maria Silva">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Idade (anos) *</label>
+                        <div class="description">Idade do paciente</div>
+                        <input type="number" id="age" placeholder="Ex: 62" min="18" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fev1">FEV1 (% predito) *</label>
+                        <div class="description">Volume expiratório forçado</div>
+                        <input type="number" id="fev1" placeholder="Ex: 85" min="20" max="150" step="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imc">IMC (kg/m²) *</label>
+                        <div class="description">Índice de Massa Corporal</div>
+                        <input type="number" id="imc" placeholder="Ex: 24.5" min="15" max="50" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Localização JEG *</label>
+                        <div class="description">Junção esôfago-gástrica</div>
+                        <select id="location" required>
+                            <option value="">-- Selecione --</option>
+                            <option value="1">Sim (JEG)</option>
+                            <option value="0">Não (Esôfago)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smoking">Tabagismo Ativo *</label>
+                        <div class="description">Fumante no momento</div>
+                        <select id="smoking" required>
+                            <option value="">-- Selecione --</option>
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- PARÂMETROS DOSIMÉTRICOS -->
+                <div class="section-title">📊 Parâmetros Dosimétricos</div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="v5">V5 (%) *</label>
+                        <div class="description">Volume ≥5 Gy</div>
+                        <input type="number" id="v5" placeholder="Ex: 24.3" step="0.1" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="v10">V10 (%) *</label>
+                        <div class="description">Volume ≥10 Gy</div>
+                        <input type="number" id="v10" placeholder="Ex: 20.5" step="0.1" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="v20">V20 (%) *</label>
+                        <div class="description">Volume ≥20 Gy</div>
+                        <input type="number" id="v20" placeholder="Ex: 15.5" step="0.1" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="v30">V30 (%) *</label>
+                        <div class="description">Volume ≥30 Gy</div>
+                        <input type="number" id="v30" placeholder="Ex: 8.5" step="0.1" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dpm">DPM (cGy) *</label>
+                        <div class="description">Dose Pulmonar Média</div>
+                        <input type="number" id="dpm" placeholder="Ex: 982" step="1" min="0" max="5000" required>
+                    </div>
+
+                    <div class="form-group" style="display:none;">
+                        <label for="vs5">VS5 (%) *</label>
+                        <div class="description">Volume >5 Gy</div>
+                        <input type="number" id="vs5" placeholder="Ex: 24.3" step="0.1" min="0" max="100" required>
+                        <input type="hidden" id="vs5Hidden" value="0">
+                    </div>
+                </div>
 
                 <!-- VALORES CALCULADOS -->
                 <div class="section-title">🔢 Valores Calculados Automaticamente</div>
@@ -583,7 +667,7 @@
                 </div>
 
                 <div class="recommendations">
-                    <h3>Recomendação : Vigilância e profilaxia</h3>
+                    <h3>📋 Recomendações Clínicas</h3>
                     <ul id="recommendationsList">
                     </ul>
                 </div>
@@ -592,7 +676,7 @@
 
         <div class="footer">
             <p>Instituto Nacional de Câncer (INCA) • Rio de Janeiro, RJ – Brasil</p>
-            <p>Trabalho de Conclusão de Residência • Camila Souza dos Santos</p>
+            <p>Versão institucional (layout INCA) • Arquivo local estático (HTML/CSS/JS) • Exportação: usar “Baixar resultado (PDF)”</p>
         </div>
     </div>
 
@@ -688,6 +772,8 @@
                 ]
             };
             return recommendations[riskCategory] || [];
+        };
+            return recommendations[riskCategory] || [];
         }
 
         
@@ -717,16 +803,27 @@
             window.print();
         }
 
-        
-        // VS5 calculado automaticamente (100 - V5) e mantido oculto
         function updateVS5() {
-            const v5Val = parseFloat(document.getElementById('v5').value);
-            const v5 = Number.isFinite(v5Val) ? v5Val : 0;
-            const vs5 = 100 - v5;
+            const v5El = document.getElementById('v5');
+            const v5 = parseFloat(v5El?.value);
+            const v5n = Number.isFinite(v5) ? v5 : 0;
+            const vs5 = 100 - v5n;
             const hidden = document.getElementById('vs5Hidden');
             if (hidden) hidden.value = vs5.toFixed(2);
+            // também preenche o input vs5 original (mesmo oculto), se existir
+            const vs5Input = document.getElementById('vs5');
+            if (vs5Input) vs5Input.value = vs5.toFixed(2);
             return vs5;
         }
+
+        // Atualiza VS5 quando V5 muda
+        document.addEventListener('DOMContentLoaded', () => {
+            const v5El = document.getElementById('v5');
+            if (v5El) v5El.addEventListener('input', updateVS5);
+            updateVS5();
+        });
+
+        
 
         function handleSubmit(event) {
             event.preventDefault();
@@ -749,6 +846,7 @@
                 vs5: parseFloat(document.getElementById('vs5').value)
             };
 
+            updateVS5();
             const logOdds = calculateLogOdds(data);
             // Z-score (preditor linear) calculado internamente e mantido oculto
             const zScore = logOdds;
@@ -797,7 +895,7 @@
             errorDiv.textContent = message;
             errorDiv.classList.add('show');
         }
-    
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPGdhPK4P6GvC5mJpVt2a1wT6lZo9T1zvGkYvQK1z5Fz0xF0L8x9y7eYt3YhYc7XcY1r9Qq3tqG1c7z8GQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 

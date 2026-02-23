@@ -1,48 +1,1087 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Risco – Pneumonite Actínica </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-INCA
-Instituto Nacional de Câncer
-Radioterapia • Dosimetria Clínica
-Ferramenta educacional
-Calculadora de Risco
-Pneumonite actínica em câncer de esôfago • Protocolo CROSS
-ℹ️ Informação: Ferramenta educacional baseada em modelo preditivo construído a partir de coorte clínica (n=53). Não substitui avaliação médica. Use como apoio à decisão.
-👤 Identificação do Paciente
-Nome do Paciente
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #404040;
+        }
 
-📋 Dados Clínicos
-Idade (anos) *
+        h1, h2, h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
 
-VEF1 (% previsto) *
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+        }
 
-IMC (kg/m²) *
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
 
-Localização JEG *
-                            -- Selecione --
-                            Sim (JEG)
-                            Não (Esôfago)
-                        
-Tabagismo ativo *
-                            -- Selecione --
-                            Sim
-                            Não
-                        
-📊 Dados Dosimétricos
-V5 (%) *
+        .inca-ribbon {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 22px;
+            background: #0b2e4f;
+            color: #fff;
+        }
 
-V10 (%) *
+        .inca-left {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
 
-V20 (%) *
+        .inca-mark {
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 16px;
+            padding: 6px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 10px;
+            line-height: 1;
+        }
 
-V30 (%) *
+        .inca-sub {
+            font-size: 12px;
+            opacity: 0.9;
+            white-space: nowrap;
+        }
 
-DPM (cGy) *
+        .inca-right {
+            text-align: right;
+        }
 
-VS5 (%) *
+        .inca-service {
+            font-size: 12px;
+            font-weight: 700;
+            opacity: 0.95;
+        }
 
-🔢 Valores Calculados Automaticamente
-V5/V20 Ratio
-0.00
-Calcular Risco
-Limpar
-Instituto Nacional de Câncer (INCA) • Rio de Janeiro, RJ – Brasil
-Versão institucional • Arquivo local estático (HTML/CSS/JS)
+        .inca-note {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .inca-logo {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0b5fa5 0%, #0aa6a6 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 30px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0b5fa5;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .info-box strong {
+            color: #0b5fa5;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0b5fa5;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0b5fa5;
+            letter-spacing: 0.3px;
+        }
+
+        .form-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .form-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0b5fa5;
+            box-shadow: 0 0 0 3px rgba(11, 95, 165, 0.1);
+        }
+
+        .calculated-value {
+            padding: 10px 12px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0b5fa5;
+        }
+
+        .calculated-value.high-ratio {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #0b5fa5 0%, #0aa6a6 100%);
+            color: white;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(11, 95, 165, 0.3);
+        }
+
+        .btn-pdf {
+            background: #0b2e4f;
+            color: white;
+        }
+
+        .btn-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(11, 46, 79, 0.25);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border-left: 5px solid #0b5fa5;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .risk-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .risk-icon.low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .risk-icon.medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .risk-icon.high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .result-title {
+            flex: 1;
+        }
+
+        .result-title h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .result-title p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .probability-display {
+            margin: 25px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .probability-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .probability-bar {
+            width: 100%;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0b5fa5 0%, #0aa6a6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.5s ease;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .probability-fill.low {
+            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+        }
+
+        .probability-fill.medium {
+            background: linear-gradient(90deg, #ffc107 0%, #ff9800 100%);
+        }
+
+        .probability-fill.high {
+            background: linear-gradient(90deg, #dc3545 0%, #e74c3c 100%);
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .result-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .detail-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 3px solid #0b5fa5;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .recommendations {
+            margin-top: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .recommendations h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .recommendations li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #0b5fa5;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        @media print {
+            body {
+                background: #fff !important;
+                padding: 0 !important;
+            }
+
+            .container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                max-width: 100% !important;
+            }
+
+            .content {
+                max-height: none !important;
+                overflow: visible !important;
+                padding: 18px 22px !important;
+            }
+
+            .button-group,
+            form,
+            .info-box {
+                display: none !important;
+            }
+
+            #resultSection {
+                display: block !important;
+                margin-top: 0 !important;
+                background: #fff !important;
+                border-left: 5px solid #000 !important;
+            }
+
+            .result-section {
+                background: #fff !important;
+            }
+
+            .result-header {
+                background: #f0f0f0 !important;
+                padding: 20px !important;
+                border-radius: 8px !important;
+                margin-bottom: 20px !important;
+            }
+
+            .result-title h2 {
+                color: #000 !important;
+                font-weight: 700 !important;
+            }
+
+            .result-title p {
+                color: #333 !important;
+                font-weight: 600 !important;
+            }
+
+            .probability-bar {
+                background: #333 !important;
+                border: 2px solid #000 !important;
+            }
+
+            .probability-fill {
+                color: #fff !important;
+                font-weight: 700 !important;
+                text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+            }
+
+            .probability-label {
+                color: #000 !important;
+                font-weight: 700 !important;
+            }
+
+            .detail-item {
+                background: #f5f5f5 !important;
+                border-left: 4px solid #000 !important;
+            }
+
+            .detail-label {
+                color: #000 !important;
+                font-weight: 700 !important;
+            }
+
+            .detail-value {
+                color: #000 !important;
+                font-weight: 700 !important;
+                font-size: 20px !important;
+            }
+
+            .recommendations {
+                background: #fff !important;
+            }
+
+            .recommendations h3 {
+                color: #000 !important;
+                font-weight: 700 !important;
+                border-bottom: 2px solid #000 !important;
+                padding-bottom: 10px !important;
+            }
+
+            .recommendations ul {
+                margin-top: 10px !important;
+            }
+
+            .recommendations li {
+                color: #000 !important;
+                font-weight: 600 !important;
+                line-height: 1.6 !important;
+            }
+
+            .recommendations li:before {
+                color: #000 !important;
+                font-weight: 900 !important;
+            }
+
+            .probability-display {
+                background: #f0f0f0 !important;
+                border: 2px solid #000 !important;
+            }
+
+            .inca-ribbon {
+                background: #000 !important;
+                color: #fff !important;
+            }
+
+            .header {
+                background: #000 !important;
+                color: #fff !important;
+            }
+
+            .header h1 {
+                color: #fff !important;
+            }
+
+            .header p {
+                color: #ddd !important;
+            }
+
+            .result-title p {
+                color: #000 !important;
+            }
+
+            .probability-fill {
+                background: #000 !important;
+                color: #fff !important;
+            }
+
+            .probability-fill.low {
+                background: #1a5c1a !important;
+            }
+
+            .probability-fill.medium {
+                background: #664400 !important;
+            }
+
+            .probability-fill.high {
+                background: #660000 !important;
+            }
+
+            .footer {
+                background: #f5f5f5 !important;
+                border-top: 2px solid #000 !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="inca-ribbon">
+            <div class="inca-left">
+                <div class="inca-logo">
+                    <svg width="34" height="34" viewBox="0 0 64 64" role="img" aria-label="Logo INCA">
+                        <circle cx="32" cy="32" r="30" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
+                        <path d="M20 38c5 4 19 4 24 0" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M24 28c3-8 13-8 16 0" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M32 14v36" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="inca-mark">INCA</div>
+                <div class="inca-sub">Instituto Nacional de Câncer</div>
+            </div>
+            <div class="inca-right">
+                <div class="inca-service">Radioterapia • Dosimetria Clínica</div>
+                <div class="inca-note">Ferramenta educacional</div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>Calculadora de Risco</h1>
+            <p>Pneumonite actínica em câncer de esôfago • Protocolo CROSS</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <strong>ℹ️ Informação:</strong> Ferramenta educacional baseada em modelo preditivo construído a partir de coorte clínica (n=53). Não substitui avaliação médica. Use como apoio à decisão.
+            </div>
+
+            <form id="calculatorForm">
+                <!-- Identificação do Paciente -->
+                <div class="section-title">👤 Identificação do Paciente</div>
+                <div class="form-section" style="grid-template-columns: 1fr;">
+                    <div class="form-group">
+                        <label for="nomePaciente">Nome do Paciente</label>
+                        <input type="text" id="nomePaciente" name="nomePaciente">
+                    </div>
+                </div>
+
+                <!-- Dados Clínicos -->
+                <div class="section-title">📋 Dados Clínicos</div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="idade">Idade (anos) *</label>
+                        <input type="number" id="idade" name="idade" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="vef1">VEF1 (% previsto) *</label>
+                        <input type="number" id="vef1" name="vef1" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="imc">IMC (kg/m²) *</label>
+                        <input type="number" id="imc" name="imc" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="jegLocalizacao">Localização JEG *</label>
+                        <select id="jegLocalizacao" name="jegLocalizacao" required>
+                            <option value="">-- Selecione --</option>
+                            <option value="1">Sim (JEG)</option>
+                            <option value="0">Não (Esôfago)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tabagismoAtivo">Tabagismo ativo *</label>
+                        <select id="tabagismoAtivo" name="tabagismoAtivo" required>
+                            <option value="">-- Selecione --</option>
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dados Dosimétricos -->
+                <div class="section-title">📊 Dados Dosimétricos</div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="v5">V5 (%) *</label>
+                        <input type="number" id="v5" name="v5" step="0.01" oninput="updateRatio()">
+                    </div>
+                    <div class="form-group">
+                        <label for="v10">V10 (%) *</label>
+                        <input type="number" id="v10" name="v10" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="v20">V20 (%) *</label>
+                        <input type="number" id="v20" name="v20" step="0.01" oninput="updateRatio()">
+                    </div>
+                    <div class="form-group">
+                        <label for="v30">V30 (%) *</label>
+                        <input type="number" id="v30" name="v30" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="dpm">DPM (cGy) *</label>
+                        <input type="number" id="dpm" name="dpm" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="vs5">VS5 (%) *</label>
+                        <input type="number" id="vs5" name="vs5" step="0.01">
+                    </div>
+                </div>
+
+                <!-- Valores Calculados -->
+                <div class="section-title">🔢 Valores Calculados Automaticamente</div>
+                <div class="form-section" style="grid-template-columns: 1fr;">
+                    <div class="form-group">
+                        <label>V5/V20 Ratio</label>
+                        <div class="calculated-value" id="ratioValue">0.00</div>
+                    </div>
+                </div>
+
+                <!-- Botões -->
+                <div class="button-group">
+                    <button type="button" class="btn btn-calculate" onclick="calculateRisk()">Calcular Risco</button>
+                    <button type="button" class="btn btn-pdf" id="btnPdf" onclick="downloadPDF()" style="display:none;">Baixar resultado (PDF)</button>
+                    <button type="reset" class="btn btn-reset" onclick="resetForm()">Limpar</button>
+                </div>
+            </form>
+
+            <!-- Resultado -->
+            <div class="result-section" id="resultSection">
+                <div class="result-header">
+                    <div class="risk-icon" id="riskIcon">🟢</div>
+                    <div class="result-title">
+                        <h2 id="resultTitle">Resultado</h2>
+                        <p id="resultSubtitle">Análise de risco concluída</p>
+                        <p id="patientInfo" style="font-size: 13px; color: #333; margin-top: 10px; font-weight: 600;"></p>
+                    </div>
+                </div>
+
+                <div class="probability-display">
+                    <div class="probability-label">Probabilidade de Pneumonite Actínica</div>
+                    <div class="probability-bar">
+                        <div class="probability-fill" id="probabilityFill" style="width: 0%">
+                            <span id="probabilityText">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Classificação de Risco</div>
+                        <div id="riskCategory" class="detail-value">--</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">V5/V20 Ratio</div>
+                        <div id="ratioDisplay" class="detail-value">--</div>
+                    </div>
+                </div>
+
+                <div class="recommendations">
+                    <h3>📋 Protocolo de Vigilância e Recomendações</h3>
+                    <ul id="recommendationsList"></ul>
+                </div>
+
+                <div class="recommendations" style="margin-top: 20px;">
+                    <button type="button" style="background: #f0f0f0; color: #333; padding: 10px 15px; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;" onclick="toggleModelDetails()">📊 Mostrar detalhes do modelo</button>
+                    <div id="modelDetails" style="display: none; margin-top: 15px; padding: 15px; background: #f9f9f9; border-left: 3px solid #0b5fa5; border-radius: 4px;">
+                        <h4 style="margin-bottom: 10px; color: #333;">Detalhes do Modelo Preditivo</h4>
+                        <div style="font-size: 12px; color: #666; line-height: 1.6;">
+                            <p><strong>Z-score:</strong> <span id="detailZScore">--</span></p>
+                            <p style="margin-top: 10px;"><strong>Variáveis Normalizadas (MinMax):</strong></p>
+                            <div id="detailNormalizedVars" style="margin-left: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11px;"></div>
+                            <p style="margin-top: 10px;"><strong>Equação Logística:</strong></p>
+                            <div id="detailEquation" style="margin-left: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: #fff; padding: 10px; border-radius: 4px; overflow-x: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Instituto Nacional de Câncer (INCA) • Rio de Janeiro, RJ – Brasil</p>
+            <p>Trabalho de Conclusão de Residência • Camila Souza dos Santos</p>
+        </div>
+    </div>
+
+    <script>
+        // Parâmetros de normalização MinMax
+        const normalizationParams = {
+            idade: { min: 39, max: 81 },
+            vef1: { min: 48.35341549591055, max: 111.1607639424331 },
+            imc: { min: 18.08342556637429, max: 29.66138499265153 },
+            jegLocalizacao: { min: 0, max: 1 },
+            tabagismoAtivo: { min: 0, max: 1 },
+            v5: { min: 33.22000999756197, max: 71.60215400417053 },
+            v10: { min: 20.50377210204146, max: 53.69269451372737 },
+            v20: { min: 8.227590681086266, max: 28.80060798201414 },
+            v30: { min: 3.136243737209029, max: 14.83967494201411 },
+            dpm: { min: 803.6463424069449, max: 1097.88943883579 },
+            vs5: { min: 28.58178662671528, max: 67.98870693144522 },
+            razaoV5V20: { min: 1.276383525822732, max: 7.587081058503893 }
+        };
+
+        // Coeficientes da regressão logística (ordem correta: E21-E32 do Excel)
+        const logisticCoefficients = {
+            intercept: -0.9122986851,
+            idade: 0.1263821932,      // E21
+            vef1: 0.0589009579,       // E22
+            imc: -0.0796598961,       // E23
+            jegLocalizacao: -0.4295158656,  // E24
+            tabagismoAtivo: 0.1787826756,   // E25
+            v5: 0.0181098256,         // E26
+            v10: -0.0716223394,       // E27
+            v20: -0.0000515692,       // E28
+            v30: -0.1454101462,       // E29
+            dpm: 1.3783607219,        // E30 (CORRIGIDO!)
+            vs5: -0.2374858468,       // E31 (CORRIGIDO!)
+            razaoV5V20: 0.067199612   // E32 (CORRIGIDO!)
+        };
+
+        let lastResult = null;
+        let lastNormalizedValues = null;
+        let lastZScore = null;
+
+        function toggleModelDetails() {
+            const detailsDiv = document.getElementById('modelDetails');
+            detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function displayModelDetails() {
+            if (!lastZScore || !lastNormalizedValues) return;
+
+            // Z-score
+            document.getElementById('detailZScore').textContent = lastZScore.toFixed(10);
+
+            // Variáveis normalizadas
+            const varsHtml = `
+                idade: ${lastNormalizedValues.idade.toFixed(6)}<br>
+                vef1: ${lastNormalizedValues.vef1.toFixed(6)}<br>
+                imc: ${lastNormalizedValues.imc.toFixed(6)}<br>
+                jeg: ${lastNormalizedValues.jegLocalizacao.toFixed(6)}<br>
+                tabagismo: ${lastNormalizedValues.tabagismoAtivo.toFixed(6)}<br>
+                v5: ${lastNormalizedValues.v5.toFixed(6)}<br>
+                v10: ${lastNormalizedValues.v10.toFixed(6)}<br>
+                v20: ${lastNormalizedValues.v20.toFixed(6)}<br>
+                v30: ${lastNormalizedValues.v30.toFixed(6)}<br>
+                dpm: ${lastNormalizedValues.dpm.toFixed(6)}<br>
+                vs5: ${lastNormalizedValues.vs5.toFixed(6)}<br>
+                razão_v5_v20: ${lastNormalizedValues.razaoV5V20.toFixed(6)}
+            `;
+            document.getElementById('detailNormalizedVars').innerHTML = varsHtml;
+
+            // Equação
+            const equation = `
+Z = -0.9122986851<br>
+&nbsp;&nbsp;&nbsp;+ 0.1263821932 × idade<br>
+&nbsp;&nbsp;&nbsp;+ 0.0589009579 × vef1<br>
+&nbsp;&nbsp;&nbsp;- 0.0796598961 × imc<br>
+&nbsp;&nbsp;&nbsp;- 0.4295158656 × jeg<br>
+&nbsp;&nbsp;&nbsp;+ 0.1787826756 × tabagismo<br>
+&nbsp;&nbsp;&nbsp;+ 0.0181098256 × v5<br>
+&nbsp;&nbsp;&nbsp;- 0.0716223394 × v10<br>
+&nbsp;&nbsp;&nbsp;- 0.0000515692 × v20<br>
+&nbsp;&nbsp;&nbsp;- 0.1454101462 × v30<br>
+&nbsp;&nbsp;&nbsp;+ 1.3783607219 × dpm<br>
+&nbsp;&nbsp;&nbsp;- 0.2374858468 × vs5<br>
+&nbsp;&nbsp;&nbsp;+ 0.067199612 × razão_v5_v20<br>
+<br>
+Probabilidade = 1 / (1 + e^(-Z))
+            `;
+            document.getElementById('detailEquation').innerHTML = equation;
+        }
+
+        function updateRatio() {
+            const v5 = parseFloat(document.getElementById('v5').value) || 0;
+            const v20 = parseFloat(document.getElementById('v20').value) || 0;
+            
+            const ratio = v20 > 0 ? (v5 / v20).toFixed(2) : '0.00';
+            const ratioElement = document.getElementById('ratioValue');
+            ratioElement.textContent = ratio;
+            
+            if (parseFloat(ratio) > 3.0) {
+                ratioElement.classList.add('high-ratio');
+            } else {
+                ratioElement.classList.remove('high-ratio');
+            }
+        }
+
+        function normalizeMinMax(value, min, max) {
+            if (min === max) return 0;
+            return (value - min) / (max - min);
+        }
+
+        function calculateRazaoV5V20(v5, v20) {
+            return v20 > 0 ? v5 / v20 : 0;
+        }
+
+        function calculateLogisticScore(normalizedValues) {
+            let z = logisticCoefficients.intercept;
+            z += logisticCoefficients.idade * normalizedValues.idade;
+            z += logisticCoefficients.vef1 * normalizedValues.vef1;
+            z += logisticCoefficients.imc * normalizedValues.imc;
+            z += logisticCoefficients.jegLocalizacao * normalizedValues.jegLocalizacao;
+            z += logisticCoefficients.tabagismoAtivo * normalizedValues.tabagismoAtivo;
+            z += logisticCoefficients.v5 * normalizedValues.v5;
+            z += logisticCoefficients.v10 * normalizedValues.v10;
+            z += logisticCoefficients.v20 * normalizedValues.v20;
+            z += logisticCoefficients.v30 * normalizedValues.v30;
+            z += logisticCoefficients.dpm * normalizedValues.dpm;  // E30: DPM
+            z += logisticCoefficients.vs5 * normalizedValues.vs5;  // E31: VS5
+            z += logisticCoefficients.razaoV5V20 * normalizedValues.razaoV5V20;  // E32: Razão
+            return z;
+        }
+
+        function calculateProbability(z) {
+            return 1 / (1 + Math.exp(-z));
+        }
+
+        function classifyRisk(probability) {
+            if (probability < 0.30) {
+                return { category: 'BAIXO', color: 'low', emoji: '🟢' };
+            } else if (probability < 0.60) {
+                return { category: 'MODERADO', color: 'medium', emoji: '🟡' };
+            } else {
+                return { category: 'ALTO', color: 'high', emoji: '🔴' };
+            }
+        }
+
+        function getRecommendations(riskCategory) {
+            const recommendations = {
+                'BAIXO': [
+                    'TC de Tórax: 3 e 6 meses',
+                    'Monitoramento clínico padrão',
+                    'Avaliação radiológica de rotina',
+                    'Educação do paciente sobre sintomas',
+                    'Profilaxia: Não indicada'
+                ],
+                'MODERADO': [
+                    'TC de Tórax: 2, 4 e 6 meses',
+                    'Monitoramento intensificado (4-6 semanas)',
+                    'Avaliação radiológica mais frequente',
+                    'Espirometria seriada',
+                    'Profilaxia: Considerar (Prednisona 20mg/dia x 2 semanas)'
+                ],
+                'ALTO': [
+                    'TC de Tórax: 1, 2, 4 e 6 meses',
+                    'Monitoramento muito frequente (2-4 semanas)',
+                    'Avaliação radiológica seriada',
+                    'Espirometria mensal',
+                    'Profilaxia: Sugerir avaliação para profilaxia (Prednisona 20mg/dia x 2 semanas)'
+                ]
+            };
+            return recommendations[riskCategory] || [];
+        }
+
+        function calculateRisk() {
+            const form = document.getElementById('calculatorForm');
+            const formData = new FormData(form);
+
+            const requiredFields = ['idade', 'vef1', 'imc', 'jegLocalizacao', 'tabagismoAtivo', 'v5', 'v10', 'v20', 'v30', 'dpm', 'vs5'];
+            
+            for (let field of requiredFields) {
+                if (!formData.get(field)) {
+                    alert('Por favor, preencha todos os campos de entrada clínica');
+                    return;
+                }
+            }
+
+            const idade = parseFloat(formData.get('idade'));
+            const vef1 = parseFloat(formData.get('vef1'));
+            const imc = parseFloat(formData.get('imc'));
+            const jegLocalizacao = parseFloat(formData.get('jegLocalizacao'));
+            const tabagismoAtivo = parseFloat(formData.get('tabagismoAtivo'));
+            const v5 = parseFloat(formData.get('v5'));
+            const v10 = parseFloat(formData.get('v10'));
+            const v20 = parseFloat(formData.get('v20'));
+            const v30 = parseFloat(formData.get('v30'));
+            const dpm = parseFloat(formData.get('dpm'));
+            const vs5 = parseFloat(formData.get('vs5'));
+
+            const normalizedValues = {
+                idade: normalizeMinMax(idade, normalizationParams.idade.min, normalizationParams.idade.max),
+                vef1: normalizeMinMax(vef1, normalizationParams.vef1.min, normalizationParams.vef1.max),
+                imc: normalizeMinMax(imc, normalizationParams.imc.min, normalizationParams.imc.max),
+                jegLocalizacao: jegLocalizacao,
+                tabagismoAtivo: tabagismoAtivo,
+                v5: normalizeMinMax(v5, normalizationParams.v5.min, normalizationParams.v5.max),
+                v10: normalizeMinMax(v10, normalizationParams.v10.min, normalizationParams.v10.max),
+                v20: normalizeMinMax(v20, normalizationParams.v20.min, normalizationParams.v20.max),
+                v30: normalizeMinMax(v30, normalizationParams.v30.min, normalizationParams.v30.max),
+                dpm: normalizeMinMax(dpm, normalizationParams.dpm.min, normalizationParams.dpm.max),
+                vs5: normalizeMinMax(vs5, normalizationParams.vs5.min, normalizationParams.vs5.max)
+            };
+
+            const razaoV5V20 = calculateRazaoV5V20(v5, v20);
+            normalizedValues.razaoV5V20 = normalizeMinMax(razaoV5V20, normalizationParams.razaoV5V20.min, normalizationParams.razaoV5V20.max);
+
+            const z = calculateLogisticScore(normalizedValues);
+            const probability = calculateProbability(z);
+            const riskClass = classifyRisk(probability);
+
+            // Armazenar para detalhes do modelo
+            lastNormalizedValues = normalizedValues;
+            lastZScore = z;
+
+            lastResult = {
+                nomePaciente: document.getElementById('nomePaciente').value,
+                probability,
+                riskCategory: riskClass.category,
+                razaoV5V20,
+                riskIcon: riskClass.emoji,
+                riskColor: riskClass.color
+            };
+
+            // Atualizar UI
+            document.getElementById('riskIcon').textContent = riskClass.emoji;
+            document.getElementById('riskIcon').className = `risk-icon ${riskClass.color}`;
+            document.getElementById('resultTitle').textContent = `Risco ${riskClass.category}`;
+            document.getElementById('resultSubtitle').textContent = `Probabilidade de pneumonite: ${(probability * 100).toFixed(2)}%`;
+            
+            const patientName = lastResult.nomePaciente ? `Paciente: ${lastResult.nomePaciente}` : '';
+            document.getElementById('patientInfo').textContent = patientName;
+
+            const probabilityFill = document.getElementById('probabilityFill');
+            const percentage = Math.round(probability * 100);
+            probabilityFill.style.width = percentage + '%';
+            probabilityFill.textContent = percentage + '%';
+            probabilityFill.className = `probability-fill ${riskClass.color}`;
+
+            document.getElementById('riskCategory').textContent = riskClass.category;
+            document.getElementById('ratioDisplay').textContent = razaoV5V20.toFixed(2);
+
+            const recommendations = getRecommendations(riskClass.category);
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
+
+            // Exibir detalhes do modelo
+            displayModelDetails();
+
+            document.getElementById('resultSection').classList.add('show');
+            document.getElementById('btnPdf').style.display = 'flex';
+
+            setTimeout(() => {
+                document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function resetForm() {
+            document.getElementById('calculatorForm').reset();
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('btnPdf').style.display = 'none';
+            document.getElementById('ratioValue').textContent = '0.00';
+            lastResult = null;
+        }
+
+        function downloadPDF() {
+            if (!lastResult) {
+                alert('Calcule o risco antes de gerar o PDF.');
+                return;
+            }
+
+            const result = document.getElementById('resultSection');
+            const nomePaciente = lastResult.nomePaciente ? lastResult.nomePaciente.replace(/\s+/g, '_') : 'resultado';
+            const opt = {
+                margin: 10,
+                filename: `INCA_Pneumonite_${nomePaciente}_${new Date().toISOString().split('T')[0]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['css', 'legacy'] }
+            };
+
+            html2pdf().set(opt).from(result).save();
+        }
+    </script>
+</body>
+</html>
